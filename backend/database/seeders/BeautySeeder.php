@@ -204,21 +204,21 @@ class BeautySeeder extends Seeder
     {
         $services = [
             [
-                'name' => 'Signature Facial',
-                'description' => 'A personalized treatment including deep cleansing, exfoliation, and hydration.',
-                'duration_minutes' => 60,
+            'name' => 'Signature Facial',
+            'description' => 'A personalized treatment including deep cleansing, exfoliation, and hydration.',
+            'duration_minutes' => 60,
                 'price' => 85.00,
             ],
             [
-                'name' => 'Bridal Makeup',
-                'description' => 'Complete makeup service for your special day, including a trial session.',
-                'duration_minutes' => 90,
+            'name' => 'Bridal Makeup',
+            'description' => 'Complete makeup service for your special day, including a trial session.',
+            'duration_minutes' => 90,
                 'price' => 150.00,
             ],
             [
-                'name' => 'Balayage Hair Color',
-                'description' => 'Hand-painted highlights for a natural, sun-kissed look.',
-                'duration_minutes' => 120,
+            'name' => 'Balayage Hair Color',
+            'description' => 'Hand-painted highlights for a natural, sun-kissed look.',
+            'duration_minutes' => 120,
                 'price' => 180.00,
             ],
         ];

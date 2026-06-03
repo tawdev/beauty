@@ -1,27 +1,54 @@
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000/api';
+const DEFAULT_LOCAL_API = 'http://127.0.0.1:8000/api';
+const BUILD_FETCH_TIMEOUT_MS = 8000;
 
-export async function fetchApi(endpoint: string, options: RequestInit = {}) {
-  const isServer = typeof window === 'undefined';
-
-  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-    ...options,
-    ...(isServer
-      ? { cache: 'no-store' as RequestCache, next: { revalidate: 0 } }
-      : {}),
-    headers: {
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-      ...options.headers,
-    },
-  });
-
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({ message: 'An error occurred' }));
-    throw new Error(error.message || 'Something went wrong');
+function getApiBaseUrl(): string {
+  const fromEnv = process.env.NEXT_PUBLIC_API_URL?.trim();
+  if (fromEnv) {
+    return fromEnv.replace(/\/$/, '');
   }
 
-  return response.json();
+  // On Vercel, never call localhost during build — fail fast so pages use fallbacks
+  if (process.env.VERCEL) {
+    return '';
+  }
+
+  return DEFAULT_LOCAL_API;
+}
+
+const API_BASE_URL = getApiBaseUrl();
+
+export async function fetchApi(endpoint: string, options: RequestInit = {}) {
+  if (!API_BASE_URL) {
+    throw new Error('API URL is not configured. Set NEXT_PUBLIC_API_URL in Vercel.');
+  }
+
+  const isServer = typeof window === 'undefined';
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), BUILD_FETCH_TIMEOUT_MS);
+
+  try {
+    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+      ...options,
+      signal: controller.signal,
+      ...(isServer
+        ? { cache: 'no-store' as RequestCache, next: { revalidate: 0 } }
+        : {}),
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+        ...options.headers,
+      },
+    });
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({ message: 'An error occurred' }));
+      throw new Error(error.message || 'Something went wrong');
+    }
+
+    return response.json();
+  } finally {
+    clearTimeout(timeoutId);
+  }
 }
 
 export const api = {
