@@ -11,6 +11,11 @@ class ReviewController extends Controller
 {
     public function index(Request $request)
     {
+        $request->validate([
+            'product_id' => 'sometimes|integer|exists:products,id',
+            'service_id' => 'sometimes|integer|exists:services,id',
+        ]);
+
         $query = Review::with('user');
 
         if ($request->has('product_id')) {
@@ -27,10 +32,10 @@ class ReviewController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'product_id' => 'nullable|exists:products,id',
-            'service_id' => 'nullable|exists:services,id',
+            'product_id' => 'required_without:service_id|prohibited_with:service_id|exists:products,id',
+            'service_id' => 'required_without:product_id|exists:services,id',
             'rating' => 'required|integer|min:1|max:5',
-            'comment' => 'nullable|string',
+            'comment' => 'nullable|string|max:2000',
         ]);
 
         $review = Review::create([
@@ -38,7 +43,7 @@ class ReviewController extends Controller
             'product_id' => $validated['product_id'] ?? null,
             'service_id' => $validated['service_id'] ?? null,
             'rating' => $validated['rating'],
-            'comment' => $validated['comment'],
+            'comment' => $validated['comment'] ?? null,
         ]);
 
         return response()->json($review, 201);

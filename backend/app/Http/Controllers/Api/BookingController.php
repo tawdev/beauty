@@ -16,6 +16,17 @@ class BookingController extends Controller
             'booking_time' => 'required|date|after:now',
         ]);
 
+        $alreadyBooked = Booking::where('service_id', $validated['service_id'])
+            ->where('booking_time', $validated['booking_time'])
+            ->whereIn('status', ['pending', 'confirmed'])
+            ->exists();
+
+        if ($alreadyBooked) {
+            return response()->json([
+                'message' => 'This booking slot is already reserved.',
+            ], 422);
+        }
+
         $booking = Booking::create([
             'user_id' => Auth::id(),
             'service_id' => $validated['service_id'],

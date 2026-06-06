@@ -20,22 +20,22 @@ Route::get('/categories', [CategoryController::class, 'index']);
 Route::get('/services', [ServiceController::class, 'index']);
 Route::get('/reviews', [ReviewController::class, 'index']);
 
-// Admin Dashboard Endpoints
-Route::get('/admin/stats', [AdminController::class, 'stats']);
-Route::get('/admin/bookings', [AdminController::class, 'bookings']);
-Route::put('/admin/bookings/{id}', [AdminController::class, 'updateBooking']);
-Route::get('/admin/orders', [AdminController::class, 'orders']);
-Route::put('/admin/orders/{id}', [AdminController::class, 'updateOrder']);
-
-// Product Admin CRUD
-Route::post('/products', [ProductController::class, 'store']);
-Route::put('/products/{id}', [ProductController::class, 'update']);
-Route::delete('/products/{id}', [ProductController::class, 'destroy']);
-
 // Protected Routes
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::post('/bookings', [BookingController::class, 'store']);
     Route::post('/orders', [OrderController::class, 'store']);
     Route::post('/reviews', [ReviewController::class, 'store']);
+});
+
+Route::middleware(['auth:sanctum', 'admin'])->group(function () {
+    Route::get('/admin/stats', [AdminController::class, 'stats']);
+    Route::get('/admin/bookings', [AdminController::class, 'bookings']);
+    Route::put('/admin/bookings/{id}', [AdminController::class, 'updateBooking']);
+    Route::get('/admin/orders', [AdminController::class, 'orders']);
+    Route::put('/admin/orders/{id}', [AdminController::class, 'updateOrder']);
+
+    Route::post('/products', [ProductController::class, 'store']);
+    Route::put('/products/{id}', [ProductController::class, 'update']);
+    Route::delete('/products/{id}', [ProductController::class, 'destroy']);
 });

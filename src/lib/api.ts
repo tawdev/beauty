@@ -23,6 +23,7 @@ export async function fetchApi(endpoint: string, options: RequestInit = {}) {
   }
 
   const isServer = typeof window === 'undefined';
+  const token = !isServer ? window.localStorage.getItem('auth_token') : null;
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), BUILD_FETCH_TIMEOUT_MS);
 
@@ -36,6 +37,7 @@ export async function fetchApi(endpoint: string, options: RequestInit = {}) {
       headers: {
         'Content-Type': 'application/json',
         Accept: 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
         ...options.headers,
       },
     });

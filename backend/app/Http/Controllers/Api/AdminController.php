@@ -45,7 +45,7 @@ class AdminController extends Controller
     {
         $bookings = Booking::with(['user', 'service'])
             ->latest()
-            ->get();
+            ->paginate(50);
  
         return response()->json($bookings);
     }
@@ -73,7 +73,7 @@ class AdminController extends Controller
     {
         $orders = Order::with(['user', 'items.product'])
             ->latest()
-            ->get();
+            ->paginate(50);
  
         return response()->json($orders);
     }

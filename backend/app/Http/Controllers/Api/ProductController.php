@@ -33,12 +33,12 @@ class ProductController extends Controller
             'price' => 'required|numeric|min:0',
             'stock' => 'integer|min:0',
             'category_id' => 'required|exists:categories,id',
-            'image_url' => 'nullable|string',
+            'image_url' => 'nullable|url|max:2048',
         ]);
 
         $product = Product::create([
             'name' => $validated['name'],
-            'slug' => Str::slug($validated['name']),
+            'slug' => $this->uniqueSlug($validated['name']),
             'description' => $validated['description'],
             'price' => $validated['price'],
             'stock' => $validated['stock'] ?? 100,
@@ -63,11 +63,11 @@ class ProductController extends Controller
             'price' => 'sometimes|required|numeric|min:0',
             'stock' => 'sometimes|integer|min:0',
             'category_id' => 'sometimes|required|exists:categories,id',
-            'image_url' => 'nullable|string',
+            'image_url' => 'nullable|url|max:2048',
         ]);
 
         if (isset($validated['name'])) {
-            $validated['slug'] = Str::slug($validated['name']);
+            $validated['slug'] = $this->uniqueSlug($validated['name'], $product->id);
         }
 
         $product->update($validated);
@@ -86,5 +86,21 @@ class ProductController extends Controller
         $product->delete();
 
         return response()->json(['message' => 'Product deleted successfully']);
+    }
+
+    private function uniqueSlug(string $name, ?int $ignoreId = null): string
+    {
+        $baseSlug = Str::slug($name);
+        $slug = $baseSlug;
+        $counter = 2;
+
+        while (Product::where('slug', $slug)
+            ->when($ignoreId, fn ($query) => $query->where('id', '!=', $ignoreId))
+            ->exists()) {
+            $slug = "{$baseSlug}-{$counter}";
+            $counter++;
+        }
+
+        return $slug;
     }
 }
