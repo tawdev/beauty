@@ -58,6 +58,9 @@ jobs:
       - name: Copy environment file
         run: cp .env.example .env
 
+      - name: Prepare Laravel directories
+        run: mkdir -p storage/framework/{cache/data,sessions,testing,views} bootstrap/cache
+
       - name: Generate app key
         run: php artisan key:generate
 
