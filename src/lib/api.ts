@@ -17,6 +17,15 @@ function getApiBaseUrl(): string {
 
 const API_BASE_URL = getApiBaseUrl();
 
+export function getImageUrl(url: string | null | undefined): string {
+  if (!url) return '';
+  if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:')) {
+    return url;
+  }
+  const host = API_BASE_URL.replace(/\/api$/, '');
+  return `${host}${url.startsWith('/') ? '' : '/'}${url}`;
+}
+
 export async function fetchApi(endpoint: string, options: RequestInit = {}) {
   if (!API_BASE_URL) {
     throw new Error('API URL is not configured. Set NEXT_PUBLIC_API_URL in Vercel.');
@@ -28,6 +37,8 @@ export async function fetchApi(endpoint: string, options: RequestInit = {}) {
   const timeoutId = setTimeout(() => controller.abort(), BUILD_FETCH_TIMEOUT_MS);
 
   try {
+    const isFormData = options.body instanceof FormData;
+
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
       ...options,
       signal: controller.signal,
@@ -35,7 +46,7 @@ export async function fetchApi(endpoint: string, options: RequestInit = {}) {
         ? { cache: 'no-store' as RequestCache, next: { revalidate: 0 } }
         : {}),
       headers: {
-        'Content-Type': 'application/json',
+        ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
         Accept: 'application/json',
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
         ...options.headers,
@@ -43,6 +54,13 @@ export async function fetchApi(endpoint: string, options: RequestInit = {}) {
     });
 
     if (!response.ok) {
+      if (response.status === 401 && !isServer) {
+        localStorage.removeItem('auth_token');
+        localStorage.removeItem('maison_admin_auth');
+        if (window.location.pathname.startsWith('/admin')) {
+          window.location.reload();
+        }
+      }
       const error = await response.json().catch(() => ({ message: 'An error occurred' }));
       throw new Error(error.message || 'Something went wrong');
     }
@@ -63,6 +81,9 @@ export const api = {
   },
   services: {
     getAll: () => fetchApi('/services'),
+  },
+  settings: {
+    get: () => fetchApi('/settings'),
   },
   bookings: {
     create: (data: any) => fetchApi('/bookings', {
@@ -102,6 +123,15 @@ export const api = {
       method: 'POST',
       body: JSON.stringify(data),
     }),
+    uploadProductImage: (file: File) => {
+      const formData = new FormData();
+      formData.append('image', file);
+      return fetchApi('/products/upload-image', {
+        method: 'POST',
+        body: formData,
+        headers: {},
+      });
+    },
     updateProduct: (id: number | string, data: any) => fetchApi(`/products/${id}`, {
       method: 'PUT',
       body: JSON.stringify(data),
@@ -109,6 +139,19 @@ export const api = {
     deleteProduct: (id: number | string) => fetchApi(`/products/${id}`, {
       method: 'DELETE',
     }),
+    updateSettings: (data: any) => fetchApi('/admin/settings', {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    }),
+    uploadLogo: (file: File) => {
+      const formData = new FormData();
+      formData.append('logo', file);
+      return fetchApi('/admin/settings/logo', {
+        method: 'POST',
+        body: formData,
+        headers: {}, // Let browser set Content-Type with boundary
+      });
+    },
   },
   auth: {
     login: (data: any) => fetchApi('/login', {
@@ -116,6 +159,10 @@ export const api = {
       body: JSON.stringify(data),
     }),
     register: (data: any) => fetchApi('/register', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+    adminAutoLogin: (data: any) => fetchApi('/admin/auto-login', {
       method: 'POST',
       body: JSON.stringify(data),
     }),

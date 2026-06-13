@@ -1,0 +1,125 @@
+{
+  "nav": {
+    "home": "Accueil",
+    "about": "À Propos",
+    "services": "Services",
+    "shop": "Boutique",
+    "gallery": "Galerie",
+    "contact": "Contact",
+    "bookNow": "Réserver"
+  },
+  "hero": {
+    "title": "Révélez Votre Beauté Naturelle",
+    "subtitle": "Des services de beauté professionnels adaptés à vos besoins",
+    "bookAppointment": "Prendre Rendez-vous",
+    "shopNow": "Acheter Maintenant",
+    "cta_button": "Prendre Rendez-vous"
+  },
+  "services": {
+    "title": "L'Art dans Chaque",
+    "titleHighlight": "Détail",
+    "subtitle": "Vivez l'excellence de la beauté avec notre gamme de services professionnels, adaptés à votre élégance unique.",
+    "premiumProducts": "Produits Premium",
+    "certifiedExperts": "Experts Certifiés",
+    "loading": "Chargement des services...",
+    "learnMore": "EN SAVOIR PLUS"
+  },
+  "products": {
+    "collection": "La Collection",
+    "title": "Excellence",
+    "titleHighlight": "Raffinée",
+    "subtitle": "Découvrez notre sélection de produits cosmétiques premium, conçus pour sublimer votre rituel beauté quotidien.",
+    "viewBoutique": "Voir la Boutique",
+    "loading": "Chargement de la collection...",
+    "addToCart": "Ajouter au Panier"
+  },
+  "about": {
+    "title": "À Propos de Nous",
+    "paragraph1": "Chez BeautyStudio, nous croyons que la beauté est un art. Avec plus de 15 ans d'expérience, notre équipe de professionnels passionnés se consacre à révéler le meilleur de chaque client.",
+    "paragraph2": "Nous utilisons uniquement des produits premium et les dernières techniques pour vous garantir des résultats exceptionnels à chaque visite. Votre satisfaction et votre confiance sont nos priorités.",
+    "learnMore": "En Savoir Plus"
+  },
+  "gallery": {
+    "title": "Notre Galerie",
+    "subtitle": "Explorez notre portfolio de transformations époustouflantes"
+  },
+  "testimonials": {
+    "title": "Ce que Disent Nos Clients",
+    "subtitle": "Lisez les témoignages de nos clients satisfaits"
+  },
+  "booking": {
+    "title": "Réservez Votre Rendez-vous",
+    "subtitle": "Planifiez votre transformation beauté aujourd'hui",
+    "fullName": "Nom Complet",
+    "namePlaceholder": "Entrez votre nom",
+    "email": "Adresse Email",
+    "emailPlaceholder": "Entrez votre email",
+    "selectService": "Choisir un Service",
+    "chooseService": "Sélectionnez un service",
+    "yourSelection": "Votre sélection",
+    "confirmBooking": "Confirmer la Réservation",
+    "confirming": "Confirmation en cours...",
+    "selectDateTime": "Veuillez sélectionner une date et une heure pour votre rendez-vous.",
+    "success": "Demande de réservation envoyée !",
+    "successDesc": "Nous vous contacterons sous peu pour confirmer.",
+    "error": "Échec de la soumission. Veuillez réessayer."
+  },
+  "footer": {
+    "description": "Votre destination pour des services de beauté professionnels. Transformer la beauté en art depuis 2009.",
+    "quickLinks": "Liens Rapides",
+    "contactInfo": "Coordonnées",
+    "followUs": "Suivez-Nous",
+    "rights": "Tous droits réservés.",
+    "privacy": "Politique de Confidentialité",
+    "terms": "Conditions d'Utilisation"
+  },
+  "shop": {
+    "title": "Notre Boutique",
+    "subtitle": "Découvrez des produits de beauté premium sélectionnés pour vous",
+    "filters": "Filtres",
+    "categories": "Catégories",
+    "allCategories": "Toutes les Catégories",
+    "search": "Rechercher des produits...",
+    "noProducts": "Aucun produit trouvé",
+    "sortBy": "Trier Par",
+    "featured": "En Vedette",
+    "priceLow": "Prix : Croissant",
+    "priceHigh": "Prix : Décroissant"
+  },
+  "checkout": {
+    "title": "Paiement",
+    "orderSummary": "Récapitulatif de la Commande",
+    "shippingInfo": "Informations de Livraison",
+    "firstName": "Prénom",
+    "lastName": "Nom",
+    "email": "Email",
+    "phone": "Téléphone",
+    "address": "Adresse",
+    "city": "Ville",
+    "zipCode": "Code Postal",
+    "placeOrder": "Passer la Commande",
+    "processing": "Traitement en cours...",
+    "subtotal": "Sous-total",
+    "shipping": "Livraison",
+    "total": "Total",
+    "free": "Gratuite",
+    "emptyCart": "Votre panier est vide",
+    "backToShop": "Retour à la Boutique"
+  },
+  "cart": {
+    "title": "Votre Panier",
+    "empty": "Votre panier est vide",
+    "continueShopping": "Continuer vos Achats",
+    "checkout": "Passer au Paiement",
+    "remove": "Supprimer",
+    "subtotal": "Sous-total"
+  },
+  "common": {
+    "loading": "Chargement...",
+    "error": "Une erreur est survenue",
+    "currency": "€"
+  },
+  "lang": {
+    "switchTo": "Changer de langue"
+  }
+}

@@ -21,7 +21,23 @@ class OrderController extends Controller
             'shipping_address' => 'required|string|max:2000',
         ]);
 
-        return DB::transaction(function () use ($validated) {
+        $validatedUser = $request->validate([
+            'firstName' => 'required|string|max:255',
+            'lastName' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+        ]);
+
+        $user = \App\Models\User::firstOrCreate(
+            ['email' => $validatedUser['email']],
+            [
+                'name' => $validatedUser['firstName'] . ' ' . $validatedUser['lastName'],
+                'password' => bcrypt(\Illuminate\Support\Str::random(16)),
+                'role' => 'customer',
+            ]
+        );
+        $userId = $user->id;
+
+        return DB::transaction(function () use ($validated, $userId) {
             $quantitiesByProduct = collect($validated['items'])
                 ->groupBy('product_id')
                 ->map(fn ($items) => $items->sum('quantity'));
@@ -48,7 +64,7 @@ class OrderController extends Controller
             }
 
             $order = Order::create([
-                'user_id' => Auth::id(),
+                'user_id' => $userId,
                 'total_amount' => $totalAmount,
                 'status' => 'pending',
                 'shipping_address' => $validated['shipping_address'],

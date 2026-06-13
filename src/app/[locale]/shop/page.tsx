@@ -11,7 +11,7 @@ export default async function ShopPage() {
     const categories = await api.categories.getAll();
 
     return (
-      <div className="size-full overflow-y-auto bg-[#FDF6F0]">
+      <div className="min-h-screen bg-[#FDF6F0]">
         <Navbar />
         <div className="pt-20 min-h-screen">
           <section className="py-24 px-4">
@@ -36,7 +36,6 @@ export default async function ShopPage() {
   } catch (error) {
     console.error("Failed to load shop dynamically:", error);
     
-    // Graceful fallback to static placeholders if API is unavailable
     const placeholderCategories = [
       { id: 1, name: 'Skincare' },
       { id: 2, name: 'Makeup' },
@@ -51,7 +50,7 @@ export default async function ShopPage() {
     ];
 
     return (
-      <div className="size-full overflow-y-auto bg-[#FDF6F0]">
+      <div className="min-h-screen bg-[#FDF6F0]">
         <Navbar />
         <div className="pt-20 min-h-screen">
           <section className="py-24 px-4">
@@ -75,4 +74,3 @@ export default async function ShopPage() {
     );
   }
 }
-

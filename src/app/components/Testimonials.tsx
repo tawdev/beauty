@@ -1,6 +1,11 @@
+"use client";
+
 import { Star } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 export function Testimonials() {
+  const t = useTranslations('testimonials');
+
   const testimonials = [
     {
       name: 'Sarah Johnson',
@@ -30,10 +35,10 @@ export function Testimonials() {
             className="text-4xl md:text-5xl mb-4 text-[#2B2B2B]"
             style={{ fontFamily: 'Playfair Display, serif', fontWeight: 700 }}
           >
-            What Our Clients Say
+            {t('title')}
           </h2>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Read testimonials from our satisfied clients
+            {t('subtitle')}
           </p>
         </div>
 

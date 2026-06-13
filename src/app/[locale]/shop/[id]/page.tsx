@@ -1,7 +1,7 @@
 import { api } from "@/lib/api";
 import { Navbar } from "@/app/components/Navbar";
 import { Footer } from "@/app/components/Footer";
-import { ProductDetailClient } from "./ProductDetailClient";
+import { ProductDetailClient } from "../../../shop/[id]/ProductDetailClient";
 import { Metadata } from "next";
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
@@ -27,7 +27,6 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
     const reviews = await api.reviews.getAll({ product_id: id });
     const allProducts = await api.products.getAll();
     
-    // Filter related products (same category, excluding current product)
     const relatedProducts = allProducts
       .filter((p: any) => p.category_id === product.category_id && p.id !== product.id)
       .slice(0, 4);

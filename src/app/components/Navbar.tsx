@@ -1,18 +1,22 @@
 "use client";
 import { Menu, X, ShoppingBag } from 'lucide-react';
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { Link, usePathname, useRouter } from '@/i18n/navigation';
 import { CartDrawer } from './CartDrawer';
 import { useCart } from '@/context/CartContext';
+import { api, getImageUrl } from '@/lib/api';
+import { useTranslations } from 'next-intl';
+import { LangSwitcher } from './LangSwitcher';
 
 export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [settings, setSettings] = useState<any>(null);
   const { items } = useCart();
   const pathname = usePathname();
   const router = useRouter();
+  const t = useTranslations('nav');
 
   useEffect(() => {
     const handleScroll = () => {
@@ -20,6 +24,12 @@ export function Navbar() {
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  useEffect(() => {
+    api.settings.get()
+      .then(setSettings)
+      .catch((error) => console.warn('Failed to load website settings:', error));
   }, []);
 
   const handleNavClick = async (id: string) => {
@@ -37,11 +47,11 @@ export function Navbar() {
   const cartItemsCount = items.reduce((sum, item) => sum + item.quantity, 0);
 
   const navLinks = [
-    { label: 'Home', action: () => handleNavClick('home') },
-    { label: 'Services', action: () => handleNavClick('services') },
-    { label: 'Shop', href: '/shop' },
-    { label: 'Gallery', action: () => handleNavClick('gallery') },
-    { label: 'Contact', action: () => handleNavClick('contact') },
+    { label: t('home'), action: () => handleNavClick('home') },
+    { label: t('services'), action: () => handleNavClick('services') },
+    { label: t('shop'), href: '/shop' },
+    { label: t('gallery'), action: () => handleNavClick('gallery') },
+    { label: t('contact'), action: () => handleNavClick('contact') },
   ];
 
   return (
@@ -52,11 +62,19 @@ export function Navbar() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <Link href="/" className="flex-shrink-0 flex items-center gap-2 group">
-              <div className="w-10 h-10 bg-[#CBA135] rounded-xl flex items-center justify-center text-white font-bold text-xl group-hover:rotate-12 transition-transform">
-                M
-              </div>
+              {settings?.logo_url ? (
+                <img
+                  src={getImageUrl(settings.logo_url)}
+                  alt={`${settings.site_name || "Maison d'Eclat"} logo`}
+                  className="w-10 h-10 rounded-xl object-contain bg-white border border-gray-100"
+                />
+              ) : (
+                <div className="w-10 h-10 bg-[#CBA135] rounded-xl flex items-center justify-center text-white font-bold text-xl group-hover:rotate-12 transition-transform">
+                  {(settings?.site_name || 'Maison').charAt(0)}
+                </div>
+              )}
               <h2 className="text-[#2B2B2B] text-2xl font-black tracking-tighter" style={{ fontFamily: 'Playfair Display, serif' }}>
-                Maison d'Éclat
+                {settings?.site_name || "Maison d'Eclat"}
               </h2>
             </Link>
 
@@ -85,6 +103,8 @@ export function Navbar() {
               
               <div className="h-6 w-px bg-gray-200 mx-2" />
 
+              <LangSwitcher />
+
               <button 
                 onClick={() => setIsCartOpen(true)}
                 className="relative p-2 text-[#2B2B2B] hover:text-[#CBA135] transition-all hover:scale-110"
@@ -101,11 +121,12 @@ export function Navbar() {
                 onClick={() => handleNavClick('booking')}
                 className="bg-[#2B2B2B] text-white px-8 py-3 rounded-full font-bold text-sm hover:bg-[#CBA135] transition-all transform hover:scale-105 shadow-lg hover:shadow-[#CBA135]/20"
               >
-                Book Now
+                {t('bookNow')}
               </button>
             </div>
 
             <div className="flex md:hidden items-center gap-4">
+              <LangSwitcher />
               <button 
                 onClick={() => setIsCartOpen(true)}
                 className="relative p-2 text-[#2B2B2B]"
@@ -156,7 +177,7 @@ export function Navbar() {
               onClick={() => handleNavClick('booking')}
               className="w-full bg-[#CBA135] text-white px-6 py-4 rounded-full font-bold text-lg shadow-xl"
             >
-              Book Now
+              {t('bookNow')}
             </button>
           </div>
         </div>

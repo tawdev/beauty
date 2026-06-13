@@ -6,9 +6,23 @@ use App\Http\Controllers\Controller;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
+    public function uploadImage(Request $request)
+    {
+        $request->validate([
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif,webp,svg|max:2048',
+        ]);
+
+        $path = $request->file('image')->store('products', 'public');
+
+        $url = Storage::disk('public')->url($path);
+
+        return response()->json(['image_url' => $url]);
+    }
+
     public function index()
     {
         return response()->json(Product::with('category')->get());
@@ -33,7 +47,7 @@ class ProductController extends Controller
             'price' => 'required|numeric|min:0',
             'stock' => 'integer|min:0',
             'category_id' => 'required|exists:categories,id',
-            'image_url' => 'nullable|url|max:2048',
+            'image_url' => 'nullable|string|max:2048',
         ]);
 
         $product = Product::create([
@@ -63,7 +77,7 @@ class ProductController extends Controller
             'price' => 'sometimes|required|numeric|min:0',
             'stock' => 'sometimes|integer|min:0',
             'category_id' => 'sometimes|required|exists:categories,id',
-            'image_url' => 'nullable|url|max:2048',
+            'image_url' => 'nullable|string|max:2048',
         ]);
 
         if (isset($validated['name'])) {

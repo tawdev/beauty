@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { api } from '@/lib/api';
+import { api, getImageUrl } from '@/lib/api';
 import { toast, Toaster } from 'sonner';
 import { 
   TrendingUp, 
@@ -19,7 +19,14 @@ import {
   LogOut,
   ChevronRight,
   Eye,
-  Loader2
+  Loader2,
+  Settings,
+  Save,
+  Image,
+  Mail,
+  Phone,
+  MapPin,
+  Globe
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -31,7 +38,7 @@ export default function AdminDashboard() {
   const [authError, setAuthError] = useState(false);
 
   // App states
-  const [activeTab, setActiveTab] = useState<'overview' | 'bookings' | 'products' | 'orders'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'bookings' | 'products' | 'orders' | 'settings'>('overview');
   const [stats, setStats] = useState<any>(null);
   const [bookings, setBookings] = useState<any[]>([]);
   const [orders, setOrders] = useState<any[]>([]);
@@ -51,6 +58,20 @@ export default function AdminDashboard() {
     category_id: '',
     image_url: ''
   });
+  const [settingsForm, setSettingsForm] = useState({
+    site_name: "Maison d'Eclat",
+    logo_url: '',
+    email: '',
+    phone: '',
+    address: '',
+    facebook_url: '',
+    instagram_url: '',
+    twitter_url: '',
+  });
+  const [uploadingLogo, setUploadingLogo] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [addImageType, setAddImageType] = useState<'upload' | 'url'>('upload');
+  const [editImageType, setEditImageType] = useState<'upload' | 'url'>('upload');
 
   // Verify auth on load
   useEffect(() => {
@@ -93,10 +114,27 @@ export default function AdminDashboard() {
         (password === 'marocmaroc') ||
         (email === 'admin' && password === 'admin123')
       ) {
-        setIsAuthorized(true);
-        localStorage.setItem('maison_admin_auth', 'true');
-        toast.success("Access Granted! Welcome to Maison d'Éclat Admin.");
-        setAuthError(false);
+        // Get a real Sanctum token so admin API calls work
+        let tokenSaved = false;
+        try {
+          const tokenRes = await api.auth.adminAutoLogin({ email, password });
+          if (tokenRes.access_token) {
+            localStorage.setItem('auth_token', tokenRes.access_token);
+            tokenSaved = true;
+          }
+        } catch (err) {
+          console.error('Admin auto-login token generation failed:', err);
+        }
+
+        if (tokenSaved) {
+          setIsAuthorized(true);
+          localStorage.setItem('maison_admin_auth', 'true');
+          toast.success("Access Granted! Welcome to Maison d'Éclat Admin.");
+          setAuthError(false);
+        } else {
+          setAuthError(true);
+          toast.error('Authentication failed. Backend is not accessible or credentials rejected.');
+        }
       } else {
         setAuthError(true);
         toast.error('Invalid credentials. Please try again.');
@@ -126,19 +164,32 @@ export default function AdminDashboard() {
     }
     setLoading(true);
     try {
-      const [statsData, bookingsData, ordersData, productsData, categoriesData] = await Promise.all([
+      const [statsData, bookingsData, ordersData, productsData, categoriesData, settingsData] = await Promise.all([
         api.admin.getStats().catch(() => null),
         api.admin.getBookings().catch(() => []),
         api.admin.getOrders().catch(() => []),
         api.products.getAll().catch(() => []),
-        api.categories.getAll().catch(() => [])
+        api.categories.getAll().catch(() => []),
+        api.settings.get().catch(() => null)
       ]);
 
       setStats(statsData);
-      setBookings(bookingsData);
-      setOrders(ordersData);
+      setBookings(Array.isArray(bookingsData) ? bookingsData : (bookingsData?.data || []));
+      setOrders(Array.isArray(ordersData) ? ordersData : (ordersData?.data || []));
       setProducts(productsData);
       setCategories(categoriesData);
+      if (settingsData) {
+        setSettingsForm({
+          site_name: settingsData.site_name || "Maison d'Eclat",
+          logo_url: settingsData.logo_url || '',
+          email: settingsData.email || '',
+          phone: settingsData.phone || '',
+          address: settingsData.address || '',
+          facebook_url: settingsData.facebook_url || '',
+          instagram_url: settingsData.instagram_url || '',
+          twitter_url: settingsData.twitter_url || '',
+        });
+      }
 
       // Set first category ID by default in productForm
       if (categoriesData && categoriesData.length > 0) {
@@ -194,6 +245,8 @@ export default function AdminDashboard() {
       category_id: product.category_id.toString(),
       image_url: product.image_url || ''
     });
+    const isUrl = product.image_url?.startsWith('http') && !product.image_url?.includes('/storage/');
+    setEditImageType(isUrl ? 'url' : 'upload');
     setShowEditModal(true);
   };
 
@@ -225,6 +278,27 @@ export default function AdminDashboard() {
     } catch (error) {
       console.error(error);
       toast.error('Failed to delete product.');
+    }
+  };
+
+  const handleSaveSettings = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const updatedSettings = await api.admin.updateSettings(settingsForm);
+      setSettingsForm({
+        site_name: updatedSettings.site_name || "Maison d'Eclat",
+        logo_url: updatedSettings.logo_url || '',
+        email: updatedSettings.email || '',
+        phone: updatedSettings.phone || '',
+        address: updatedSettings.address || '',
+        facebook_url: updatedSettings.facebook_url || '',
+        instagram_url: updatedSettings.instagram_url || '',
+        twitter_url: updatedSettings.twitter_url || '',
+      });
+      toast.success('Website settings saved successfully!');
+    } catch (error) {
+      console.error(error);
+      toast.error('Failed to save website settings.');
     }
   };
 
@@ -379,6 +453,13 @@ export default function AdminDashboard() {
           >
             <ShoppingBag size={20} />
             Orders
+          </button>
+          <button
+            onClick={() => setActiveTab('settings')}
+            className={`w-full flex items-center gap-4 px-6 py-4 rounded-2xl font-bold transition-all ${activeTab === 'settings' ? 'bg-[#CBA135] text-white shadow-lg shadow-[#CBA135]/25' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}
+          >
+            <Settings size={20} />
+            Website Settings
           </button>
         </nav>
 
@@ -610,6 +691,7 @@ export default function AdminDashboard() {
                         category_id: categories[0]?.id.toString() || '',
                         image_url: ''
                       });
+                      setAddImageType('upload');
                       setShowAddModal(true);
                     }}
                     className="bg-[#2B2B2B] text-white hover:bg-[#CBA135] px-6 py-4 rounded-full font-black text-sm flex items-center gap-2 shadow-lg transition-all self-start"
@@ -641,7 +723,7 @@ export default function AdminDashboard() {
                             <tr key={product.id} className="hover:bg-gray-50/50 transition-colors">
                               <td className="px-8 py-5 flex items-center gap-4">
                                 <div className="w-14 h-14 rounded-xl overflow-hidden bg-gray-50 flex-shrink-0">
-                                  <img src={product.image_url} alt={product.name} className="w-full h-full object-cover" />
+                                  <img src={getImageUrl(product.image_url)} alt={product.name} className="w-full h-full object-cover" />
                                 </div>
                                 <div>
                                   <p className="font-bold text-[#2B2B2B]">{product.name}</p>
@@ -761,6 +843,170 @@ export default function AdminDashboard() {
               </div>
             )}
 
+            {/* Website Settings Tab */}
+            {activeTab === 'settings' && (
+              <div className="space-y-8">
+                <header>
+                  <h2 className="text-4xl font-black text-[#2B2B2B]" style={{ fontFamily: 'Playfair Display, serif' }}>
+                    Website Settings
+                  </h2>
+                  <p className="text-gray-400 mt-1 font-medium">Update storefront identity and contact information.</p>
+                </header>
+
+                <form onSubmit={handleSaveSettings} className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm p-8 space-y-8">
+                  <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-10">
+                    <div className="space-y-4">
+                      <div className="aspect-square rounded-3xl bg-[#FDF6F0] border border-gray-100 overflow-hidden flex items-center justify-center relative">
+                        {settingsForm.logo_url ? (
+                          <img
+                            src={getImageUrl(settingsForm.logo_url)}
+                            alt={`${settingsForm.site_name} logo preview`}
+                            className="w-full h-full object-contain p-6"
+                          />
+                        ) : (
+                          <div className="text-center text-gray-400">
+                            <Image size={44} className="mx-auto mb-3 text-[#CBA135]" />
+                            <p className="text-xs font-black uppercase tracking-widest">Logo Preview</p>
+                          </div>
+                        )}
+                        {settingsForm.logo_url && (
+                          <button
+                            type="button"
+                            onClick={() => setSettingsForm({ ...settingsForm, logo_url: '' })}
+                            className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1.5 hover:bg-red-600 transition-colors shadow-md"
+                            title="Remove logo"
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        )}
+                      </div>
+                      <p className="text-sm text-gray-400 font-medium leading-relaxed">
+                        Upload a logo image (JPEG, PNG, WebP, SVG — max 2MB). Leave empty to keep the gold initial mark.
+                      </p>
+                    </div>
+
+                    <div className="space-y-6">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-2">
+                          <label className="text-xs font-black uppercase tracking-widest text-gray-500">Website Name</label>
+                          <input
+                            required
+                            type="text"
+                            value={settingsForm.site_name}
+                            onChange={(e) => setSettingsForm({ ...settingsForm, site_name: e.target.value })}
+                            className="w-full bg-[#FDF6F0] border-transparent focus:border-[#CBA135] focus:bg-white rounded-2xl p-4 transition-all outline-none text-[#2B2B2B] font-medium"
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <label className="text-xs font-black uppercase tracking-widest text-gray-500">Logo Image</label>
+                          <div className="relative">
+                            <Image size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                            <input
+                              type="file"
+                              accept="image/jpeg,image/png,image/gif,image/webp,image/svg+xml"
+                              disabled={uploadingLogo}
+                              onChange={async (e) => {
+                                const file = e.target.files?.[0];
+                                if (!file) return;
+                                setUploadingLogo(true);
+                                try {
+                                  const res = await api.admin.uploadLogo(file);
+                                  setSettingsForm({ ...settingsForm, logo_url: res.logo_url });
+                                  toast.success('Logo uploaded successfully');
+                                } catch (err: any) {
+                                  toast.error(err.message || 'Failed to upload logo');
+                                } finally {
+                                  setUploadingLogo(false);
+                                }
+                              }}
+                              className="w-full bg-[#FDF6F0] border-transparent focus:border-[#CBA135] focus:bg-white rounded-2xl p-4 pl-12 transition-all outline-none text-[#2B2B2B] font-medium file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-[#CBA135] file:text-white file:font-black file:text-xs file:cursor-pointer hover:file:bg-[#b88d2e]"
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-2">
+                          <label className="text-xs font-black uppercase tracking-widest text-gray-500">Email</label>
+                          <div className="relative">
+                            <Mail size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                            <input
+                              type="email"
+                              placeholder="hello@maison.com"
+                              value={settingsForm.email}
+                              onChange={(e) => setSettingsForm({ ...settingsForm, email: e.target.value })}
+                              className="w-full bg-[#FDF6F0] border-transparent focus:border-[#CBA135] focus:bg-white rounded-2xl p-4 pl-12 transition-all outline-none text-[#2B2B2B] font-medium"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="space-y-2">
+                          <label className="text-xs font-black uppercase tracking-widest text-gray-500">Phone Number</label>
+                          <div className="relative">
+                            <Phone size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                            <input
+                              type="text"
+                              placeholder="+212 600-000000"
+                              value={settingsForm.phone}
+                              onChange={(e) => setSettingsForm({ ...settingsForm, phone: e.target.value })}
+                              className="w-full bg-[#FDF6F0] border-transparent focus:border-[#CBA135] focus:bg-white rounded-2xl p-4 pl-12 transition-all outline-none text-[#2B2B2B] font-medium"
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="space-y-2">
+                        <label className="text-xs font-black uppercase tracking-widest text-gray-500">Address</label>
+                        <div className="relative">
+                          <MapPin size={18} className="absolute left-4 top-5 text-gray-400" />
+                          <textarea
+                            rows={3}
+                            placeholder="Salon address"
+                            value={settingsForm.address}
+                            onChange={(e) => setSettingsForm({ ...settingsForm, address: e.target.value })}
+                            className="w-full bg-[#FDF6F0] border-transparent focus:border-[#CBA135] focus:bg-white rounded-2xl p-4 pl-12 transition-all outline-none text-[#2B2B2B] font-medium resize-none"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        {[
+                          ['facebook_url', 'Facebook URL'],
+                          ['instagram_url', 'Instagram URL'],
+                          ['twitter_url', 'Twitter URL'],
+                        ].map(([field, label]) => (
+                          <div className="space-y-2" key={field}>
+                            <label className="text-xs font-black uppercase tracking-widest text-gray-500">{label}</label>
+                            <div className="relative">
+                              <Globe size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                              <input
+                                type="url"
+                                placeholder="https://..."
+                                value={settingsForm[field as keyof typeof settingsForm]}
+                                onChange={(e) => setSettingsForm({ ...settingsForm, [field]: e.target.value })}
+                                className="w-full bg-[#FDF6F0] border-transparent focus:border-[#CBA135] focus:bg-white rounded-2xl p-4 pl-12 transition-all outline-none text-[#2B2B2B] font-medium"
+                              />
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex justify-end border-t border-gray-100 pt-8">
+                    <button
+                      type="submit"
+                      className="bg-[#2B2B2B] text-white hover:bg-[#CBA135] px-8 py-4 rounded-full font-black text-sm flex items-center gap-2 shadow-lg transition-all"
+                    >
+                      <Save size={16} />
+                      Save Settings
+                    </button>
+                  </div>
+                </form>
+              </div>
+            )}
+
           </div>
         )}
       </main>
@@ -826,15 +1072,74 @@ export default function AdminDashboard() {
                 </select>
               </div>
 
-              <div className="space-y-2">
-                <label className="text-xs font-black uppercase tracking-widest text-gray-500">Image URL</label>
-                <input 
-                  type="text" 
-                  placeholder="https://unsplash.com/... (optional)"
-                  value={productForm.image_url}
-                  onChange={(e) => setProductForm({...productForm, image_url: e.target.value})}
-                  className="w-full bg-[#FDF6F0] border-transparent focus:border-[#CBA135] focus:bg-white rounded-2xl p-4 transition-all outline-none text-[#2B2B2B] font-medium"
-                />
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <label className="text-xs font-black uppercase tracking-widest text-gray-500">Image Source</label>
+                  <div className="flex gap-2 p-1 bg-[#FDF6F0] rounded-2xl">
+                    <button
+                      type="button"
+                      onClick={() => setAddImageType('upload')}
+                      className={`flex-1 py-2.5 rounded-xl text-sm font-bold transition-all ${addImageType === 'upload' ? 'bg-[#2B2B2B] text-white shadow-sm' : 'text-gray-500 hover:text-[#2B2B2B]'}`}
+                    >
+                      Upload File
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setAddImageType('url')}
+                      className={`flex-1 py-2.5 rounded-xl text-sm font-bold transition-all ${addImageType === 'url' ? 'bg-[#2B2B2B] text-white shadow-sm' : 'text-gray-500 hover:text-[#2B2B2B]'}`}
+                    >
+                      Image URL
+                    </button>
+                  </div>
+                </div>
+
+                {addImageType === 'upload' ? (
+                  <div className="space-y-2">
+                    <label className="text-xs font-black uppercase tracking-widest text-gray-500">Product Image File</label>
+                    <div className="relative">
+                      <Image size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                      <input
+                        type="file"
+                        accept="image/*"
+                        disabled={uploadingImage}
+                        onChange={async (e) => {
+                          const file = e.target.files?.[0];
+                          if (!file) return;
+                          setUploadingImage(true);
+                          try {
+                            const res = await api.admin.uploadProductImage(file);
+                            setProductForm({ ...productForm, image_url: res.image_url });
+                            toast.success('Image uploaded successfully');
+                          } catch (err: any) {
+                            toast.error(err.message || 'Failed to upload image');
+                          } finally {
+                            setUploadingImage(false);
+                          }
+                        }}
+                        className="w-full bg-[#FDF6F0] border-transparent focus:border-[#CBA135] focus:bg-white rounded-2xl p-4 pl-12 transition-all outline-none text-[#2B2B2B] font-medium file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-[#CBA135] file:text-white file:font-black file:text-xs file:cursor-pointer hover:file:bg-[#b88d2e]"
+                      />
+                    </div>
+                    {productForm.image_url && (
+                      <div className="mt-2 flex items-center gap-3">
+                        <div className="relative w-16 h-16 rounded-xl overflow-hidden border border-gray-200">
+                          <img src={getImageUrl(productForm.image_url)} alt="Preview" className="w-full h-full object-cover" />
+                        </div>
+                        <span className="text-xs text-gray-400 truncate max-w-xs">{productForm.image_url}</span>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <label className="text-xs font-black uppercase tracking-widest text-gray-500">Image URL</label>
+                    <input 
+                      type="text" 
+                      placeholder="https://unsplash.com/... (optional)"
+                      value={productForm.image_url}
+                      onChange={(e) => setProductForm({...productForm, image_url: e.target.value})}
+                      className="w-full bg-[#FDF6F0] border-transparent focus:border-[#CBA135] focus:bg-white rounded-2xl p-4 transition-all outline-none text-[#2B2B2B] font-medium"
+                    />
+                  </div>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -930,15 +1235,74 @@ export default function AdminDashboard() {
                 </select>
               </div>
 
-              <div className="space-y-2">
-                <label className="text-xs font-black uppercase tracking-widest text-gray-500">Image URL</label>
-                <input 
-                  type="text" 
-                  placeholder="https://unsplash.com/... (optional)"
-                  value={productForm.image_url}
-                  onChange={(e) => setProductForm({...productForm, image_url: e.target.value})}
-                  className="w-full bg-[#FDF6F0] border-transparent focus:border-[#CBA135] focus:bg-white rounded-2xl p-4 transition-all outline-none text-[#2B2B2B] font-medium"
-                />
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <label className="text-xs font-black uppercase tracking-widest text-gray-500">Image Source</label>
+                  <div className="flex gap-2 p-1 bg-[#FDF6F0] rounded-2xl">
+                    <button
+                      type="button"
+                      onClick={() => setEditImageType('upload')}
+                      className={`flex-1 py-2.5 rounded-xl text-sm font-bold transition-all ${editImageType === 'upload' ? 'bg-[#2B2B2B] text-white shadow-sm' : 'text-gray-500 hover:text-[#2B2B2B]'}`}
+                    >
+                      Upload File
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setEditImageType('url')}
+                      className={`flex-1 py-2.5 rounded-xl text-sm font-bold transition-all ${editImageType === 'url' ? 'bg-[#2B2B2B] text-white shadow-sm' : 'text-gray-500 hover:text-[#2B2B2B]'}`}
+                    >
+                      Image URL
+                    </button>
+                  </div>
+                </div>
+
+                {editImageType === 'upload' ? (
+                  <div className="space-y-2">
+                    <label className="text-xs font-black uppercase tracking-widest text-gray-500">Product Image File</label>
+                    <div className="relative">
+                      <Image size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                      <input
+                        type="file"
+                        accept="image/*"
+                        disabled={uploadingImage}
+                        onChange={async (e) => {
+                          const file = e.target.files?.[0];
+                          if (!file) return;
+                          setUploadingImage(true);
+                          try {
+                            const res = await api.admin.uploadProductImage(file);
+                            setProductForm({ ...productForm, image_url: res.image_url });
+                            toast.success('Image uploaded successfully');
+                          } catch (err: any) {
+                            toast.error(err.message || 'Failed to upload image');
+                          } finally {
+                            setUploadingImage(false);
+                          }
+                        }}
+                        className="w-full bg-[#FDF6F0] border-transparent focus:border-[#CBA135] focus:bg-white rounded-2xl p-4 pl-12 transition-all outline-none text-[#2B2B2B] font-medium file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-[#CBA135] file:text-white file:font-black file:text-xs file:cursor-pointer hover:file:bg-[#b88d2e]"
+                      />
+                    </div>
+                    {productForm.image_url && (
+                      <div className="mt-2 flex items-center gap-3">
+                        <div className="relative w-16 h-16 rounded-xl overflow-hidden border border-gray-200">
+                          <img src={getImageUrl(productForm.image_url)} alt="Preview" className="w-full h-full object-cover" />
+                        </div>
+                        <span className="text-xs text-gray-400 truncate max-w-xs">{productForm.image_url}</span>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <label className="text-xs font-black uppercase tracking-widest text-gray-500">Image URL</label>
+                    <input 
+                      type="text" 
+                      placeholder="https://unsplash.com/... (optional)"
+                      value={productForm.image_url}
+                      onChange={(e) => setProductForm({...productForm, image_url: e.target.value})}
+                      className="w-full bg-[#FDF6F0] border-transparent focus:border-[#CBA135] focus:bg-white rounded-2xl p-4 transition-all outline-none text-[#2B2B2B] font-medium"
+                    />
+                  </div>
+                )}
               </div>
 
               <div className="space-y-2">

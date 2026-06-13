@@ -1,0 +1,125 @@
+{
+  "nav": {
+    "home": "Home",
+    "about": "About",
+    "services": "Services",
+    "shop": "Shop",
+    "gallery": "Gallery",
+    "contact": "Contact",
+    "bookNow": "Book Now"
+  },
+  "hero": {
+    "title": "Reveal Your Natural Beauty",
+    "subtitle": "Professional beauty services tailored for you",
+    "bookAppointment": "Book Appointment",
+    "shopNow": "Shop Now",
+    "cta_button": "Book Appointment"
+  },
+  "services": {
+    "title": "Artistry in Every",
+    "titleHighlight": "Detail",
+    "subtitle": "Experience the pinnacle of beauty with our curated range of professional services, tailored to your unique elegance.",
+    "premiumProducts": "Premium Products",
+    "certifiedExperts": "Certified Experts",
+    "loading": "Curating services...",
+    "learnMore": "LEARN MORE"
+  },
+  "products": {
+    "collection": "The Collection",
+    "title": "Curated",
+    "titleHighlight": "Excellence",
+    "subtitle": "Discover our hand-picked selection of premium cosmetic products, designed to elevate your daily beauty ritual.",
+    "viewBoutique": "View Full Boutique",
+    "loading": "Loading collection...",
+    "addToCart": "Add to Cart"
+  },
+  "about": {
+    "title": "About Us",
+    "paragraph1": "At BeautyStudio, we believe that beauty is an art form. With over 15 years of experience, our team of passionate professionals is dedicated to bringing out the best in every client.",
+    "paragraph2": "We use only premium products and the latest techniques to ensure you receive exceptional results every time. Your satisfaction and confidence are our top priorities.",
+    "learnMore": "Learn More"
+  },
+  "gallery": {
+    "title": "Our Gallery",
+    "subtitle": "Explore our portfolio of stunning transformations"
+  },
+  "testimonials": {
+    "title": "What Our Clients Say",
+    "subtitle": "Read testimonials from our satisfied clients"
+  },
+  "booking": {
+    "title": "Book Your Appointment",
+    "subtitle": "Schedule your beauty transformation today",
+    "fullName": "Full Name",
+    "namePlaceholder": "Enter your name",
+    "email": "Email Address",
+    "emailPlaceholder": "Enter your email",
+    "selectService": "Select Service",
+    "chooseService": "Choose a service",
+    "yourSelection": "Your selection",
+    "confirmBooking": "Confirm Booking",
+    "confirming": "Confirming...",
+    "selectDateTime": "Please select a date and time for your appointment.",
+    "success": "Booking request submitted!",
+    "successDesc": "We will contact you shortly to confirm.",
+    "error": "Failed to submit booking request. Please try again."
+  },
+  "footer": {
+    "description": "Your destination for professional beauty services. Transforming beauty into art since 2009.",
+    "quickLinks": "Quick Links",
+    "contactInfo": "Contact Info",
+    "followUs": "Follow Us",
+    "rights": "All rights reserved.",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service"
+  },
+  "shop": {
+    "title": "Our Boutique",
+    "subtitle": "Discover premium beauty products curated for you",
+    "filters": "Filters",
+    "categories": "Categories",
+    "allCategories": "All Categories",
+    "search": "Search products...",
+    "noProducts": "No products found",
+    "sortBy": "Sort By",
+    "featured": "Featured",
+    "priceLow": "Price: Low to High",
+    "priceHigh": "Price: High to Low"
+  },
+  "checkout": {
+    "title": "Checkout",
+    "orderSummary": "Order Summary",
+    "shippingInfo": "Shipping Information",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "email": "Email",
+    "phone": "Phone",
+    "address": "Address",
+    "city": "City",
+    "zipCode": "Zip Code",
+    "placeOrder": "Place Order",
+    "processing": "Processing...",
+    "subtotal": "Subtotal",
+    "shipping": "Shipping",
+    "total": "Total",
+    "free": "Free",
+    "emptyCart": "Your cart is empty",
+    "backToShop": "Back to Shop"
+  },
+  "cart": {
+    "title": "Your Cart",
+    "empty": "Your cart is empty",
+    "continueShopping": "Continue Shopping",
+    "checkout": "Checkout",
+    "remove": "Remove",
+    "subtotal": "Subtotal"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "currency": "$"
+  },
+  "lang": {
+    "switchTo": "Switch language"
+  }
+}

@@ -1,6 +1,10 @@
 "use client";
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
+import { useTranslations } from 'next-intl';
+
 export function Hero() {
+  const t = useTranslations('hero');
+
   const scrollToBooking = () => {
     const element = document.getElementById('booking');
     if (element) {
@@ -24,23 +28,23 @@ export function Hero() {
           className="text-5xl md:text-7xl mb-6 text-white drop-shadow-lg"
           style={{ fontFamily: 'Playfair Display, serif', fontWeight: 700 }}
         >
-          Reveal Your Natural Beauty
+          {t('title')}
         </h1>
         <p className="text-xl md:text-2xl text-white mb-8 drop-shadow-md">
-          Professional beauty services tailored for you
+          {t('subtitle')}
         </p>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
           <button
             onClick={scrollToBooking}
             className="w-full sm:w-auto bg-[#CBA135] text-white px-10 py-4 rounded-full text-lg hover:bg-[#B8912F] transition-all transform hover:scale-105 shadow-lg font-bold"
           >
-            Book Appointment
+            {t('bookAppointment')}
           </button>
           <Link
             href="/shop"
             className="w-full sm:w-auto bg-white/20 backdrop-blur-md text-white border-2 border-white px-10 py-4 rounded-full text-lg hover:bg-white hover:text-[#2B2B2B] transition-all transform hover:scale-105 shadow-lg font-bold"
           >
-            Shop Now
+            {t('shopNow')}
           </Link>
         </div>
       </div>

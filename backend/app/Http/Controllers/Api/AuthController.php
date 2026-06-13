@@ -63,4 +63,46 @@ class AuthController extends Controller
 
         return response()->json(['message' => 'Logged out successfully']);
     }
+
+    public function adminAutoLogin(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|string',
+            'password' => 'required|string',
+        ]);
+
+        $allowed = [
+            ['email' => 'admin@maison.com', 'password' => 'marocmaroc'],
+            ['email' => 'admin', 'password' => 'admin123'],
+        ];
+
+        $matched = false;
+        foreach ($allowed as $creds) {
+            if ($request->email === $creds['email'] && $request->password === $creds['password']) {
+                $matched = true;
+                break;
+            }
+        }
+
+        if (!$matched) {
+            return response()->json(['message' => 'Invalid credentials'], 401);
+        }
+
+        $user = User::firstOrCreate(
+            ['email' => 'admin@maison.com'],
+            [
+                'name' => 'Admin',
+                'password' => bcrypt('marocmaroc'),
+                'role' => 'admin',
+            ]
+        );
+
+        $token = $user->createToken('auth_token')->plainTextToken;
+
+        return response()->json([
+            'access_token' => $token,
+            'token_type' => 'Bearer',
+            'user' => $user,
+        ]);
+    }
 }

@@ -1,0 +1,125 @@
+{
+  "nav": {
+    "home": "Startseite",
+    "about": "Über Uns",
+    "services": "Dienstleistungen",
+    "shop": "Shop",
+    "gallery": "Galerie",
+    "contact": "Kontakt",
+    "bookNow": "Jetzt Buchen"
+  },
+  "hero": {
+    "title": "Entdecken Sie Ihre Natürliche Schönheit",
+    "subtitle": "Professionelle Beauty-Dienstleistungen, auf Sie zugeschnitten",
+    "bookAppointment": "Termin Buchen",
+    "shopNow": "Jetzt Einkaufen",
+    "cta_button": "Termin Buchen"
+  },
+  "services": {
+    "title": "Kunstfertigkeit in Jedem",
+    "titleHighlight": "Detail",
+    "subtitle": "Erleben Sie den Gipfel der Schönheit mit unserem kuratierten Angebot an professionellen Dienstleistungen, abgestimmt auf Ihre einzigartige Eleganz.",
+    "premiumProducts": "Premium Produkte",
+    "certifiedExperts": "Zertifizierte Experten",
+    "loading": "Services werden geladen...",
+    "learnMore": "MEHR ERFAHREN"
+  },
+  "products": {
+    "collection": "Die Kollektion",
+    "title": "Kuratierte",
+    "titleHighlight": "Exzellenz",
+    "subtitle": "Entdecken Sie unsere handverlesene Auswahl an Premium-Kosmetikprodukten, die Ihr tägliches Beauty-Ritual bereichern.",
+    "viewBoutique": "Zur Boutique",
+    "loading": "Kollektion wird geladen...",
+    "addToCart": "In den Warenkorb"
+  },
+  "about": {
+    "title": "Über Uns",
+    "paragraph1": "Bei BeautyStudio glauben wir, dass Schönheit eine Kunstform ist. Mit über 15 Jahren Erfahrung widmet sich unser Team leidenschaftlicher Profis dem Ziel, das Beste in jedem Kunden hervorzubringen.",
+    "paragraph2": "Wir verwenden ausschließlich Premium-Produkte und die neuesten Techniken, um Ihnen jedes Mal außergewöhnliche Ergebnisse zu garantieren. Ihre Zufriedenheit und Ihr Vertrauen haben für uns höchste Priorität.",
+    "learnMore": "Mehr Erfahren"
+  },
+  "gallery": {
+    "title": "Unsere Galerie",
+    "subtitle": "Entdecken Sie unser Portfolio atemberaubender Verwandlungen"
+  },
+  "testimonials": {
+    "title": "Was Unsere Kunden Sagen",
+    "subtitle": "Lesen Sie Erfahrungsberichte unserer zufriedenen Kunden"
+  },
+  "booking": {
+    "title": "Termin Buchen",
+    "subtitle": "Planen Sie Ihre Beauty-Verwandlung noch heute",
+    "fullName": "Vollständiger Name",
+    "namePlaceholder": "Geben Sie Ihren Namen ein",
+    "email": "E-Mail-Adresse",
+    "emailPlaceholder": "Geben Sie Ihre E-Mail ein",
+    "selectService": "Service Auswählen",
+    "chooseService": "Wählen Sie einen Service",
+    "yourSelection": "Ihre Auswahl",
+    "confirmBooking": "Buchung Bestätigen",
+    "confirming": "Wird bestätigt...",
+    "selectDateTime": "Bitte wählen Sie ein Datum und eine Uhrzeit für Ihren Termin.",
+    "success": "Buchungsanfrage gesendet!",
+    "successDesc": "Wir werden Sie in Kürze zur Bestätigung kontaktieren.",
+    "error": "Buchung fehlgeschlagen. Bitte versuchen Sie es erneut."
+  },
+  "footer": {
+    "description": "Ihr Ziel für professionelle Beauty-Dienstleistungen. Schönheit in Kunst verwandeln seit 2009.",
+    "quickLinks": "Schnelllinks",
+    "contactInfo": "Kontaktinfo",
+    "followUs": "Folgen Sie Uns",
+    "rights": "Alle Rechte vorbehalten.",
+    "privacy": "Datenschutzerklärung",
+    "terms": "Nutzungsbedingungen"
+  },
+  "shop": {
+    "title": "Unsere Boutique",
+    "subtitle": "Entdecken Sie Premium-Beauty-Produkte, kuratiert für Sie",
+    "filters": "Filter",
+    "categories": "Kategorien",
+    "allCategories": "Alle Kategorien",
+    "search": "Produkte suchen...",
+    "noProducts": "Keine Produkte gefunden",
+    "sortBy": "Sortieren Nach",
+    "featured": "Empfohlen",
+    "priceLow": "Preis: Aufsteigend",
+    "priceHigh": "Preis: Absteigend"
+  },
+  "checkout": {
+    "title": "Kasse",
+    "orderSummary": "Bestellübersicht",
+    "shippingInfo": "Versandinformationen",
+    "firstName": "Vorname",
+    "lastName": "Nachname",
+    "email": "E-Mail",
+    "phone": "Telefon",
+    "address": "Adresse",
+    "city": "Stadt",
+    "zipCode": "Postleitzahl",
+    "placeOrder": "Bestellung Aufgeben",
+    "processing": "Wird verarbeitet...",
+    "subtotal": "Zwischensumme",
+    "shipping": "Versand",
+    "total": "Gesamt",
+    "free": "Kostenlos",
+    "emptyCart": "Ihr Warenkorb ist leer",
+    "backToShop": "Zurück zum Shop"
+  },
+  "cart": {
+    "title": "Ihr Warenkorb",
+    "empty": "Ihr Warenkorb ist leer",
+    "continueShopping": "Weiter Einkaufen",
+    "checkout": "Zur Kasse",
+    "remove": "Entfernen",
+    "subtotal": "Zwischensumme"
+  },
+  "common": {
+    "loading": "Wird geladen...",
+    "error": "Ein Fehler ist aufgetreten",
+    "currency": "€"
+  },
+  "lang": {
+    "switchTo": "Sprache wechseln"
+  }
+}

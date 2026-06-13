@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import { format, parse, isValid } from 'date-fns';
 import { api } from '@/lib/api';
 import { BookingDateTimePicker } from './BookingDateTimePicker';
+import { useTranslations } from 'next-intl';
 
 export function Booking() {
   const [formData, setFormData] = useState({
@@ -17,6 +18,7 @@ export function Booking() {
   });
   const [services, setServices] = useState<{ id: number; name: string }[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const t = useTranslations('booking');
 
   useEffect(() => {
     api.services
@@ -35,7 +37,7 @@ export function Booking() {
     e.preventDefault();
 
     if (!formData.date || !formData.time) {
-      toast.error('Please select a date and time for your appointment.');
+      toast.error(t('selectDateTime'));
       return;
     }
 
@@ -50,13 +52,27 @@ export function Booking() {
       ? format(parsedTime, 'h:mm a')
       : formData.time;
 
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    const service_id = parseInt(formData.service);
+    const booking_time = `${formData.date} ${formData.time}:00`;
 
-    toast.success('Booking request submitted!', {
-      description: `${summaryDate} at ${timeLabel}. We will contact you shortly to confirm.`,
-    });
-    setFormData({ name: '', email: '', service: '', date: '', time: '' });
-    setIsSubmitting(false);
+    try {
+      await api.bookings.create({
+        name: formData.name,
+        email: formData.email,
+        service_id,
+        booking_time,
+      });
+
+      toast.success(t('success'), {
+        description: `${summaryDate} at ${timeLabel}. ${t('successDesc')}`,
+      });
+      setFormData({ name: '', email: '', service: '', date: '', time: '' });
+    } catch (error: any) {
+      console.error('Failed to submit booking:', error);
+      toast.error(error.message || t('error'));
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleChange = (
@@ -76,10 +92,10 @@ export function Booking() {
             className="text-4xl md:text-5xl mb-4 text-[#2B2B2B]"
             style={{ fontFamily: 'Playfair Display, serif', fontWeight: 700 }}
           >
-            Book Your Appointment
+            {t('title')}
           </h2>
           <p className="text-lg text-gray-600">
-            Schedule your beauty transformation today
+            {t('subtitle')}
           </p>
         </div>
 
@@ -87,7 +103,7 @@ export function Booking() {
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label htmlFor="name" className="block mb-2 text-[#2B2B2B] font-medium">
-                Full Name
+                {t('fullName')}
               </label>
               <input
                 type="text"
@@ -97,13 +113,13 @@ export function Booking() {
                 onChange={handleChange}
                 required
                 className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:border-[#CBA135] focus:ring-2 focus:ring-[#CBA135]/20 bg-[#FDF6F0] transition-all"
-                placeholder="Enter your name"
+                placeholder={t('namePlaceholder')}
               />
             </div>
 
             <div>
               <label htmlFor="email" className="block mb-2 text-[#2B2B2B] font-medium">
-                Email Address
+                {t('email')}
               </label>
               <input
                 type="email"
@@ -113,13 +129,13 @@ export function Booking() {
                 onChange={handleChange}
                 required
                 className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:border-[#CBA135] focus:ring-2 focus:ring-[#CBA135]/20 bg-[#FDF6F0] transition-all"
-                placeholder="Enter your email"
+                placeholder={t('emailPlaceholder')}
               />
             </div>
 
             <div>
               <label htmlFor="service" className="block mb-2 text-[#2B2B2B] font-medium">
-                Select Service
+                {t('selectService')}
               </label>
               <select
                 id="service"
@@ -129,7 +145,7 @@ export function Booking() {
                 required
                 className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:border-[#CBA135] focus:ring-2 focus:ring-[#CBA135]/20 bg-[#FDF6F0] transition-all"
               >
-                <option value="">Choose a service</option>
+                <option value="">{t('chooseService')}</option>
                 {services.map((s) => (
                   <option key={s.id} value={String(s.id)}>
                     {s.name}
@@ -148,7 +164,7 @@ export function Booking() {
             {formData.date && formData.time && (
               <div className="rounded-2xl bg-gradient-to-r from-[#FDF6F0] to-[#CBA135]/10 border border-[#CBA135]/20 px-5 py-4 text-center">
                 <p className="text-xs font-bold uppercase tracking-widest text-[#CBA135] mb-1">
-                  Your selection
+                  {t('yourSelection')}
                 </p>
                 <p className="text-[#2B2B2B] font-semibold" style={{ fontFamily: 'Playfair Display, serif' }}>
                   {isValid(parse(formData.date, 'yyyy-MM-dd', new Date())) &&
@@ -167,10 +183,10 @@ export function Booking() {
               {isSubmitting ? (
                 <>
                   <Loader2 className="animate-spin" size={20} />
-                  Confirming...
+                  {t('confirming')}
                 </>
               ) : (
-                'Confirm Booking'
+                t('confirmBooking')
               )}
             </button>
           </form>

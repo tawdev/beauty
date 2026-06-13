@@ -26,8 +26,8 @@ export function ShopClient({ initialProducts, categories }: { initialProducts: a
   };
 
   return (
-    <div className="flex flex-col md:flex-row gap-8">
-      <aside className="md:w-64 flex-shrink-0">
+    <div className="flex flex-col md:flex-row gap-8 items-start">
+      <aside className="w-full md:w-64 md:sticky md:top-24 md:self-start flex-shrink-0 md:max-h-[calc(100vh-7rem)] md:overflow-y-auto">
         <FiltersSidebar categories={categories} onFilterChange={handleFilterChange} />
       </aside>
       

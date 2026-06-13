@@ -1,4 +1,10 @@
+"use client";
+
+import { useTranslations } from 'next-intl';
+
 export function Gallery() {
+  const t = useTranslations('gallery');
+
   const images = [
     'https://images.unsplash.com/photo-1646526803575-5c3759f2b932?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHw2fHxiZWF1dHklMjBtb2RlbCUyMHBvcnRyYWl0JTIwZWxlZ2FudHxlbnwxfHx8fDE3NzY3NjYyNDR8MA&ixlib=rb-4.1.0&q=80&w=1080',
     'https://images.unsplash.com/photo-1723150512429-bfa92988d845?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwyfHxtYWtldXAlMjBhcnRpc3QlMjBiZWF1dHklMjBjb3NtZXRpY3N8ZW58MXx8fHwxNzc2NzY2MjUxfDA&ixlib=rb-4.1.0&q=80&w=1080',
@@ -19,10 +25,10 @@ export function Gallery() {
             className="text-4xl md:text-5xl mb-4 text-[#2B2B2B]"
             style={{ fontFamily: 'Playfair Display, serif', fontWeight: 700 }}
           >
-            Our Gallery
+            {t('title')}
           </h2>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Explore our portfolio of stunning transformations
+            {t('subtitle')}
           </p>
         </div>
 

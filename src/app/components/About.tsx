@@ -1,4 +1,10 @@
+"use client";
+
+import { useTranslations } from 'next-intl';
+
 export function About() {
+  const t = useTranslations('about');
+
   return (
     <section className="py-24 px-4 bg-white">
       <div className="max-w-7xl mx-auto">
@@ -16,16 +22,16 @@ export function About() {
               className="text-4xl md:text-5xl mb-6 text-[#2B2B2B]"
               style={{ fontFamily: 'Playfair Display, serif', fontWeight: 700 }}
             >
-              About Us
+              {t('title')}
             </h2>
             <p className="text-lg text-gray-700 mb-6 leading-relaxed">
-              At BeautyStudio, we believe that beauty is an art form. With over 15 years of experience, our team of passionate professionals is dedicated to bringing out the best in every client.
+              {t('paragraph1')}
             </p>
             <p className="text-lg text-gray-700 mb-8 leading-relaxed">
-              We use only premium products and the latest techniques to ensure you receive exceptional results every time. Your satisfaction and confidence are our top priorities.
+              {t('paragraph2')}
             </p>
             <a href="#services" className="inline-block border-2 border-[#E8B4B8] text-[#2B2B2B] px-8 py-3 rounded-full hover:bg-[#E8B4B8] hover:text-white transition-all text-center">
-              Learn More
+              {t('learnMore')}
             </a>
           </div>
         </div>

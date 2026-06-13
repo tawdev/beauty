@@ -16,6 +16,21 @@ class BookingController extends Controller
             'booking_time' => 'required|date|after:now',
         ]);
 
+        $validatedUser = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+        ]);
+
+        $user = \App\Models\User::firstOrCreate(
+            ['email' => $validatedUser['email']],
+            [
+                'name' => $validatedUser['name'],
+                'password' => bcrypt(\Illuminate\Support\Str::random(16)),
+                'role' => 'customer',
+            ]
+        );
+        $userId = $user->id;
+
         $alreadyBooked = Booking::where('service_id', $validated['service_id'])
             ->where('booking_time', $validated['booking_time'])
             ->whereIn('status', ['pending', 'confirmed'])
@@ -28,7 +43,7 @@ class BookingController extends Controller
         }
 
         $booking = Booking::create([
-            'user_id' => Auth::id(),
+            'user_id' => $userId,
             'service_id' => $validated['service_id'],
             'booking_time' => $validated['booking_time'],
             'status' => 'pending',

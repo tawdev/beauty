@@ -4,10 +4,12 @@ import { Sparkles, Scissors, Hand, Loader2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
 import { motion } from 'motion/react';
+import { useTranslations } from 'next-intl';
 
 export function Services() {
   const [services, setServices] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const t = useTranslations('services');
 
   useEffect(() => {
     const loadServices = async () => {
@@ -16,7 +18,6 @@ export function Services() {
         setServices(data);
       } catch (error) {
         console.error('Failed to fetch services:', error);
-        // Fallback to static data if API fails
         setServices([
           {
             title: 'Makeup',
@@ -42,12 +43,28 @@ export function Services() {
   }, []);
 
   const getIcon = (name: string) => {
-    switch (name?.toLowerCase() || '') {
-      case 'makeup': return <Sparkles size={32} />;
-      case 'hair': return <Scissors size={32} />;
-      case 'nails': return <Hand size={32} />;
-      default: return <Sparkles size={32} />;
+    const n = name?.toLowerCase() || '';
+    if (n.includes('makeup')) return <Sparkles size={32} />;
+    if (n.includes('hair') || n.includes('color') || n.includes('balayage') || n.includes('cut')) return <Scissors size={32} />;
+    if (n.includes('nail') || n.includes('manicure')) return <Hand size={32} />;
+    return <Sparkles size={32} />;
+  };
+
+  const getServiceImage = (name: string) => {
+    const n = name?.toLowerCase() || '';
+    if (n.includes('facial') || n.includes('skin') || n.includes('care')) {
+      return 'https://images.unsplash.com/photo-1556229010-6c3f2c9ca5f8?q=80&w=1080';
     }
+    if (n.includes('makeup') || n.includes('make-up')) {
+      return 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?q=80&w=1080';
+    }
+    if (n.includes('hair') || n.includes('color') || n.includes('balayage') || n.includes('cut')) {
+      return 'https://images.unsplash.com/photo-1562322140-8baeececf3df?q=80&w=1080';
+    }
+    if (n.includes('nail') || n.includes('manicure') || n.includes('pedicure')) {
+      return 'https://images.unsplash.com/photo-1519014816548-bf5fe059798b?q=80&w=1080';
+    }
+    return 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?q=80&w=1080';
   };
 
   return (
@@ -62,10 +79,10 @@ export function Services() {
               className="text-5xl md:text-6xl font-black mb-6 text-[#2B2B2B]"
               style={{ fontFamily: 'Playfair Display, serif' }}
             >
-              Artistry in Every <span className="text-[#CBA135]">Detail</span>
+              {t('title')} <span className="text-[#CBA135]">{t('titleHighlight')}</span>
             </motion.h2>
             <p className="text-xl text-gray-500 leading-relaxed">
-              Experience the pinnacle of beauty with our curated range of professional services, tailored to your unique elegance.
+              {t('subtitle')}
             </p>
           </div>
           <motion.div 
@@ -75,10 +92,10 @@ export function Services() {
             className="flex gap-4"
           >
             <div className="px-6 py-3 bg-white rounded-full border shadow-sm font-bold text-sm text-[#2B2B2B]">
-              Premium Products
+              {t('premiumProducts')}
             </div>
             <div className="px-6 py-3 bg-[#CBA135] rounded-full shadow-lg font-bold text-sm text-white">
-              Certified Experts
+              {t('certifiedExperts')}
             </div>
           </motion.div>
         </div>
@@ -86,7 +103,7 @@ export function Services() {
         {loading ? (
           <div className="flex flex-col items-center justify-center py-24 gap-4">
             <Loader2 className="w-12 h-12 text-[#CBA135] animate-spin" />
-            <p className="text-gray-400 font-bold uppercase tracking-widest text-xs">Curating services...</p>
+            <p className="text-gray-400 font-bold uppercase tracking-widest text-xs">{t('loading')}</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
@@ -101,7 +118,7 @@ export function Services() {
               >
                 <div className="h-80 overflow-hidden relative">
                   <img
-                    src={service.image_url || service.image}
+                    src={service.image_url || service.image || getServiceImage(service.name || service.title)}
                     alt={service.name || service.title}
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                   />
@@ -129,7 +146,7 @@ export function Services() {
                     }}
                     className="flex items-center gap-2 text-sm font-black text-[#2B2B2B] hover:text-[#CBA135] transition-colors group/btn"
                   >
-                    LEARN MORE 
+                    {t('learnMore')}
                     <div className="w-6 h-px bg-[#2B2B2B] group-hover/btn:bg-[#CBA135] group-hover/btn:w-10 transition-all" />
                   </button>
                 </div>

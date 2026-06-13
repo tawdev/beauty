@@ -5,14 +5,17 @@ import { Navbar } from "@/app/components/Navbar";
 import { Footer } from "@/app/components/Footer";
 import { motion } from "motion/react";
 import { ShoppingBag, ChevronRight, CreditCard, ShieldCheck, ArrowLeft, Send } from "lucide-react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
+import { api } from "@/lib/api";
+import { useTranslations } from "next-intl";
 
 export default function CheckoutPage() {
   const { items, total, clearCart } = useCart();
   const router = useRouter();
+  const t = useTranslations('checkout');
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     firstName: '',
@@ -32,10 +35,10 @@ export default function CheckoutPage() {
           <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center mx-auto mb-8 shadow-sm">
             <ShoppingBag size={48} className="text-gray-200" />
           </div>
-          <h1 className="text-4xl font-black text-[#2B2B2B] mb-4" style={{ fontFamily: 'Playfair Display, serif' }}>Your bag is empty</h1>
+          <h1 className="text-4xl font-black text-[#2B2B2B] mb-4" style={{ fontFamily: 'Playfair Display, serif' }}>{t('emptyCart')}</h1>
           <p className="text-gray-500 mb-8">You need to add some premium items to your bag before checking out.</p>
           <Link href="/shop" className="inline-block bg-[#CBA135] text-white px-10 py-4 rounded-full font-bold hover:bg-[#B8912F] transition-all">
-            Return to Boutique
+            {t('backToShop')}
           </Link>
         </div>
         <Footer />
@@ -50,14 +53,31 @@ export default function CheckoutPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    
-    // Simulate API call
-    setTimeout(() => {
-      setLoading(false);
+
+    const shipping_address = `${formData.address}, ${formData.city}, ${formData.zipCode} (Phone: ${formData.phone})`;
+    const orderItems = items.map((item) => ({
+      product_id: item.id,
+      quantity: item.quantity,
+    }));
+
+    try {
+      await api.orders.create({
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        shipping_address,
+        items: orderItems,
+      });
+
       toast.success("Order placed successfully! We will contact you soon.");
       clearCart();
       router.push('/');
-    }, 2000);
+    } catch (error: any) {
+      console.error('Failed to submit order:', error);
+      toast.error(error.message || 'Failed to place order. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -86,7 +106,7 @@ export default function CheckoutPage() {
                     <Send size={24} />
                   </div>
                   <div>
-                    <h2 className="text-3xl font-black text-[#2B2B2B]" style={{ fontFamily: 'Playfair Display, serif' }}>Shipping Details</h2>
+                    <h2 className="text-3xl font-black text-[#2B2B2B]" style={{ fontFamily: 'Playfair Display, serif' }}>{t('shippingInfo')}</h2>
                     <p className="text-sm text-gray-400 font-medium">Where should we send your luxury items?</p>
                   </div>
                 </div>
@@ -94,7 +114,7 @@ export default function CheckoutPage() {
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
-                      <label className="text-xs font-black uppercase tracking-widest text-gray-500 ml-1">First Name</label>
+                      <label className="text-xs font-black uppercase tracking-widest text-gray-500 ml-1">{t('firstName')}</label>
                       <input 
                         required
                         type="text" 
@@ -106,7 +126,7 @@ export default function CheckoutPage() {
                       />
                     </div>
                     <div className="space-y-2">
-                      <label className="text-xs font-black uppercase tracking-widest text-gray-500 ml-1">Last Name</label>
+                      <label className="text-xs font-black uppercase tracking-widest text-gray-500 ml-1">{t('lastName')}</label>
                       <input 
                         required
                         type="text" 
@@ -121,7 +141,7 @@ export default function CheckoutPage() {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
-                      <label className="text-xs font-black uppercase tracking-widest text-gray-500 ml-1">Email Address</label>
+                      <label className="text-xs font-black uppercase tracking-widest text-gray-500 ml-1">{t('email')}</label>
                       <input 
                         required
                         type="email" 
@@ -133,7 +153,7 @@ export default function CheckoutPage() {
                       />
                     </div>
                     <div className="space-y-2">
-                      <label className="text-xs font-black uppercase tracking-widest text-gray-500 ml-1">Phone Number</label>
+                      <label className="text-xs font-black uppercase tracking-widest text-gray-500 ml-1">{t('phone')}</label>
                       <input 
                         required
                         type="tel" 
@@ -147,7 +167,7 @@ export default function CheckoutPage() {
                   </div>
 
                   <div className="space-y-2">
-                    <label className="text-xs font-black uppercase tracking-widest text-gray-500 ml-1">Shipping Address</label>
+                    <label className="text-xs font-black uppercase tracking-widest text-gray-500 ml-1">{t('address')}</label>
                     <input 
                       required
                       type="text" 
@@ -161,7 +181,7 @@ export default function CheckoutPage() {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
-                      <label className="text-xs font-black uppercase tracking-widest text-gray-500 ml-1">City</label>
+                      <label className="text-xs font-black uppercase tracking-widest text-gray-500 ml-1">{t('city')}</label>
                       <input 
                         required
                         type="text" 
@@ -173,7 +193,7 @@ export default function CheckoutPage() {
                       />
                     </div>
                     <div className="space-y-2">
-                      <label className="text-xs font-black uppercase tracking-widest text-gray-500 ml-1">Zip Code</label>
+                      <label className="text-xs font-black uppercase tracking-widest text-gray-500 ml-1">{t('zipCode')}</label>
                       <input 
                         required
                         type="text" 
@@ -189,14 +209,14 @@ export default function CheckoutPage() {
                   <div className="pt-8 flex flex-col sm:flex-row items-center gap-4">
                     <Link href="/shop" className="flex items-center gap-2 text-sm font-black text-gray-400 hover:text-[#2B2B2B] transition-colors group">
                       <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
-                      Back to Shop
+                      {t('backToShop')}
                     </Link>
                     <button 
                       type="submit" 
                       disabled={loading}
                       className="flex-1 w-full bg-[#2B2B2B] text-white py-5 rounded-full font-black text-lg hover:bg-[#CBA135] transition-all transform active:scale-95 shadow-xl hover:shadow-[#CBA135]/20 disabled:opacity-50 flex items-center justify-center gap-3"
                     >
-                      {loading ? "Processing..." : "Confirm My Order"}
+                      {loading ? t('processing') : t('placeOrder')}
                       {!loading && <CreditCard size={20} />}
                     </button>
                   </div>
@@ -214,7 +234,7 @@ export default function CheckoutPage() {
               >
                 <div className="bg-[#2B2B2B] text-white rounded-[2.5rem] p-10 shadow-2xl">
                   <h3 className="text-2xl font-bold mb-8 flex items-center gap-3" style={{ fontFamily: 'Playfair Display, serif' }}>
-                    Order Summary
+                    {t('orderSummary')}
                     <span className="text-[10px] bg-[#CBA135] px-2 py-1 rounded-full text-white uppercase tracking-widest">{items.length} items</span>
                   </h3>
                   
@@ -235,15 +255,15 @@ export default function CheckoutPage() {
 
                   <div className="space-y-4 pt-8 border-t border-white/10">
                     <div className="flex justify-between text-sm text-gray-400">
-                      <span>Subtotal</span>
+                      <span>{t('subtotal')}</span>
                       <span className="text-white font-bold">{total.toFixed(2)} MAD</span>
                     </div>
                     <div className="flex justify-between text-sm text-gray-400">
-                      <span>Express Shipping</span>
-                      <span className="text-green-400 font-bold">FREE</span>
+                      <span>{t('shipping')}</span>
+                      <span className="text-green-400 font-bold">{t('free')}</span>
                     </div>
                     <div className="flex justify-between text-3xl font-black text-white pt-4">
-                      <span style={{ fontFamily: 'Playfair Display, serif' }}>Total</span>
+                      <span style={{ fontFamily: 'Playfair Display, serif' }}>{t('total')}</span>
                       <span className="text-[#CBA135]">{total.toFixed(2)} MAD</span>
                     </div>
                   </div>
