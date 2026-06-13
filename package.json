@@ -53,6 +53,7 @@
     "next-intl": "^4.13.0",
     "next-themes": "0.4.6",
     "react": "18.3.1",
+    "@swc/helpers": "0.5.23",
     "react-day-picker": "8.10.1",
     "react-dnd": "16.0.1",
     "react-dnd-html5-backend": "16.0.1",
@@ -69,7 +70,6 @@
     "vaul": "1.1.2"
   },
   "devDependencies": {
-    "@swc/helpers": "^0.5.23",
     "@tailwindcss/postcss": "^4.0.0",
     "@types/node": "^20",
     "@types/react": "^18",
@@ -91,5 +91,8 @@
     "react-dom": {
       "optional": true
     }
+  },
+  "overrides": {
+    "@swc/helpers": "0.5.23"
   }
 }
