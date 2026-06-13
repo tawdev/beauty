@@ -1,7 +1,7 @@
 import { api } from "@/lib/api";
 import { Navbar } from "@/app/components/Navbar";
 import { Footer } from "@/app/components/Footer";
-import { ProductDetailClient } from "../../../shop/[id]/ProductDetailClient";
+import { ProductDetailClient } from "./ProductDetailClient";
 import { Metadata } from "next";
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
